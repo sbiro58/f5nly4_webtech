@@ -1,0 +1,82 @@
+body.loginpage {
+  background-color: #2196F3;
+}
+
+.main-container {
+  background-color: white;
+}
+
+.navbar {
+  margin-bottom: 50px;
+  border-radius: 0;
+}
+
+/* Remove the jumbotron's default bottom margin */
+ .focim {
+  margin-bottom: 0;
+}
+
+.logo-konyv {
+   font-size:36px !important;
+   color:white !important;
+}
+
+a.logo-link {
+  padding:10px;
+  background-color: transparent;
+}
+
+img.img-responsive{
+  width:150px;
+  height:100px;
+  border:2px #337ab7 solid;
+  border-radius:5px;
+  padding:10px;
+}
+
+spinner{
+    border-top: 50px solid #0A5BC4;
+    border-left: 50px solid #00A600;
+    border-right: 50px solid #DC572E;
+    border-bottom: 50px solid #BF1E4B;
+    height:0;
+    width:0;
+    border-radius: 50px;
+    -webkit-animation: spin 1s infinite linear;
+    -moz-animation: spin 1s infinite linear;
+    animation: spin 1s infinite linear;
+    margin-right:10px;/*Just 4 spacing*/
+    display:inline-block;/*Can also be removed*/
+    position: relative;
+    left: 50%;
+}
+spinner:last-child{
+    margin:0;
+}
+
+@keyframes spin{
+    100%{
+        -webkit-transform:rotate(360deg);
+        transform:rotate(360deg);
+    }
+}
+
+@-webkit-keyframes spin{
+    100%{
+        -webkit-transform:rotate(360deg);
+        transform:rotate(360deg);
+    }
+}
+
+@-moz-keyframes spin{
+    100%{
+        -webkit-transform:rotate(360deg);
+        transform:rotate(360deg);
+    }
+}
+
+/* Add a gray background color and some padding to the footer */
+footer {
+  background-color: #f2f2f2;
+  padding: 25px;
+}

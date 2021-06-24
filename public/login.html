@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bazsa Ákos konyvesboltja</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/1.2.0/vue-resource.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-router/2.2.0/vue-router.js"></script>
+
+
+</head>
+<body>
+
+<div id="app">
+
+    <nav class="navbar navbar-inverse">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand logo-link" href="#"><i class="fa fa-book logo-konyv"></i></a>
+        </div>
+        <div class="collapse navbar-collapse" id="myNavbar">
+          <ul class="nav navbar-nav">
+            <li class="active" v-on:click="state='allbook'"><a href="#">Összes könyv</a></li>
+            <li><a href="#" v-on:click="state='search'">Keresés</a></li>
+            <li><a href="#" v-on:click="state='contact'">Kapcsolat</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#" style="color:gold;"><span class="fa fa-dollar" ></span> {{user.money}}</a></li>
+            <li><a href="#" v-on:click="state='settings'"><span class="glyphicon glyphicon-user"></span> {{user.name}}</a></li>
+            <li><a href="#" v-on:click="state='cart'"><span class="glyphicon glyphicon-shopping-cart"></span> Kosár ({{user.cart.length||0}})</a></li>
+            <li><a href="/"><span class="fa fa-sign-out"></span> Kilépés</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="jumbotron focim">
+      <div class="container text-center">
+        <h1>Bazsa könyvesbolt</h1>
+        <p>Válogasson kedvére a könyvek közül!</p>
+        <p>Nálunk biztosan megtalálja, amit keres</p>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="container">
+
+
+
+
+
+
+      <template v-if="loading">
+        <spinner></spinner>
+      </template>
+
+      <template v-else>
+
+        <template v-if="state=='allbook'">
+          <div class="row">
+            <div class="col-sm-6" v-for="item in items">
+              <div class="panel panel-primary">
+                <div class="panel-heading text-uppercase">{{item.szerzo}}: {{item.cim}}</div>
+                <div class="panel-body">
+                  <div class="col-sm-6">
+                    <img v-bind:src="item.img" class="img-responsive" alt="Image">
+                  </div>
+                  <div class="col-sm-6">
+                    <div class="btn-group-vertical" style="width:100%;">
+                      <button type="button" class="btn btn-primary" v-on:click="()=>{selectedItem=item;state='details';}">Részletek</button>
+                      <button type="button" class="btn btn-success" v-on:click="addCart(item)">Kosárba</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="panel-footer">{{item.ar}} HUF, Raktáron még: {{item.db}} db.</div>
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <template v-else v-if="state=='search'">
+          <div class="form-group">
+            <label for="usr">Keresés:</label>
+            <input type="text" class="form-control"  v-model="searchQuery">
+          </div>
+           <div class="list-group">
+             <a href="#" class="list-group-item list-group-item-info"  v-for="item in filteredItems"  v-on:click="()=>{selectedItem=item;state='details';}">
+               <span class="badge">{{item.ar}} HUF</span>
+               <h4 class="list-group-item-heading">{{item.cim}}</h4>
+               <p class="list-group-item-text">{{item.szerzo}}</p>
+
+             </a>
+          </div>
+
+        </template>
+
+
+        <template v-else v-if="state=='details' && Object.keys(selectedItem).length > 0">
+          <div class="row">
+              <div class="col-sm-3">
+                <img v-bind:src="selectedItem.img" class="img-responsive" alt="Image">
+              </div>
+              <div class="col-sm-9">
+                <div class="well">ISBN : {{selectedItem.isbn}}</div>
+                <div class="well">Szerző : {{selectedItem.szerzo}}</div>
+                <div class="well">Cím : {{selectedItem.cim}}</div>
+                <div class="well">Kiadás : {{selectedItem.kiadas}}</div>
+                <div class="well">Ár : {{selectedItem.ar}}</div>
+                <div class="well">Raktáron : {{selectedItem.db}}</div>
+                <div class="well">Leírás : {{selectedItem.leiras}}</div>
+                <button type="button" class="btn btn-success" v-on:click="addCart(selectedItem)">Kosárba</button>
+              </div>
+          </div>
+
+        </template>
+
+        <template v-else v-if="state=='contact'">
+          <div class="jumbotron focim">
+            <div class="container text-center">
+              <h2>Kapcsolat</h2>
+              <p>bazsakonyvesbolt@gmail.com</p>
+              <hr>
+              <p>+367777777777</p>
+              <hr>
+              <p>Kányádi Sándor u. 76</p>
+            </div>
+          </div>
+        </template>
+
+
+        <template v-else v-if="state=='settings'">
+
+            <h2>Felhasználói beállítások</h2>
+            <div class="form-group">
+              <label>Név:</label>
+              <input type="text" class="form-control" v-model="user.name">
+              <label>Jelszó:</label>
+              <input type="text" class="form-control" v-model="user.pswd">
+              <label>Email:</label>
+              <input type="text" class="form-control" v-model="user.email">
+              <label>Szül. dátum:</label>
+              <input type="text" class="form-control" v-model="user.birth">
+              <label>Cím:</label>
+              <input type="text" class="form-control" v-model="user.address">
+              <button class="btn btn-success" v-on:click="saveuser">Mentés</button>
+            </div>
+
+
+        </template>
+
+        <template v-else v-if="state=='cart'">
+          <h2>A kosár tartalma</h2>
+          <div class="row">
+            <div class="col-sm-12" v-for="item in user.cart">
+              <div class="panel panel-primary">
+                <div class="panel-heading text-uppercase">{{item.szerzo}}: {{item.cim}}</div>
+                <div class="panel-body">
+                  <div class="col-sm-6">
+                    <img v-bind:src="item.img" class="img-responsive" alt="Image">
+                  </div>
+                  <div class="col-sm-6">
+                    <div class="btn-group-vertical" style="width:100%;">
+                      <button type="button" class="btn btn-primary" v-on:click="()=>{selectedItem=item;state='details';}">Részletek</button>
+                      <button type="button" class="btn btn-danger" v-on:click="removeCart(item)">TÖRLÉS</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="panel-footer">{{item.ar}} HUF, Raktáron még: {{item.db}} db.</div>
+              </div>
+            </div>
+          </div>
+
+        </template>
+
+
+      </template>
+
+
+    </div>
+
+    <br>
+
+
+    <footer class="container-fluid text-center">
+      <p>Bazsa konyvesbolt &copy; Copyright, 2019</p>
+
+    </footer>
+
+</div> 
+<script type="text/javascript" src="vue.js"></script>
+
+</body>
+</html>
